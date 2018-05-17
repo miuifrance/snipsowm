@@ -157,8 +157,8 @@ def weather_item_handler(hermes, intentMessage):
 
 if __name__ == "__main__":
      with Hermes("localhost:1883") as h:
-        h.subscribe_intent("Alice:searchWeatherForecastTemperature", weather_temperature_handler)\
-        h.subscribe_intent("Alice:searchWeatherForecastCondition", weather_condition_handler)\
-        h.subscribe_intent("Alice:searchWeatherForecastItem", weather_item_handler)\
-        h.subscribe_intent("Alice:searchWeatherForecast", weather_forecast_handler)\
+        h.subscribe_intent("searchWeatherForecastTemperature", weather_temperature_handler)\
+        h.subscribe_intent("searchWeatherForecastCondition", weather_condition_handler)\
+        h.subscribe_intent("searchWeatherForecastItem", weather_item_handler)\
+        h.subscribe_intent("searchWeatherForecast", weather_forecast_handler)\
          .start()
