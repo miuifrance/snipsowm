@@ -5,46 +5,44 @@ import datetime as dt
 from dateutil.parser import parse
 
 def weather_temperature_handler(hermes, intentMessage):
-     import datetime as dt
-      from dateutil.parser import parse
+  import datetime as dt
+  from dateutil.parser import parse
+  # Determine datetime
+  datetime = None
+  if snips.intent.forecast_start_datetime:
+    datetime = snips.intent.forecast_start_datetime[0]
+  if isinstance(datetime, snips.types.InstantTime):
+    datetime = (datetime.datetime).replace(tzinfo=None)
+  elif isinstance(datetime, snips.types.TimeInterval):
+    datetime = (datetime.end).replace(tzinfo=None)
+  
+  # Determine granularity
+  granularity = None
+  if datetime:  # We have an information about the date.
+    now = dt.datetime.now().replace(tzinfo=None)
+    delta_days = abs((datetime - now).days)
+    if delta_days > 10: # There a week difference between today and the date we want the forecast.
+      granularity = 2 # Give the day of the forecast date, plus the number of the day in the month.
+    elif delta_days > 5: # There a 10-day difference between today and the date we want the forecast.
+      granularity = 1 # Give the full date
+    else:
+      granularity = 0 # Just give the day of the week
+  else:
+    granularity = 0
 
-      # Determine datetime
-      datetime = None
-      if snips.intent.forecast_start_datetime:
-        datetime = snips.intent.forecast_start_datetime[0]
+  locality = None
+  try:
+    locality = snips.intent.forecast_locality \
+      or snips.intent.forecast_country \
+      or snips.intent.forecast_region \
+      or snips.intent.forecast_geographical_poi
 
-      if isinstance(datetime, snips.types.InstantTime):
-        datetime = (datetime.datetime).replace(tzinfo=None)
-      elif isinstance(datetime, snips.types.TimeInterval):
-        datetime = (datetime.end).replace(tzinfo=None)
+    if locality:
+      locality = locality[0]
+  except Exception:
+    pass
 
-      # Determine granularity
-      granularity = None
-      if datetime:  # We have an information about the date.
-        now = dt.datetime.now().replace(tzinfo=None)
-        delta_days = abs((datetime - now).days)
-        if delta_days > 10: # There a week difference between today and the date we want the forecast.
-          granularity = 2 # Give the day of the forecast date, plus the number of the day in the month.
-        elif delta_days > 5: # There a 10-day difference between today and the date we want the forecast.
-          granularity = 1 # Give the full date
-        else:
-          granularity = 0 # Just give the day of the week
-      else:
-        granularity = 0
-
-      locality = None
-      try:
-        locality = snips.intent.forecast_locality \
-          or snips.intent.forecast_country \
-          or snips.intent.forecast_region \
-          or snips.intent.forecast_geographical_poi
-
-        if locality:
-          locality = locality[0]
-      except Exception:
-        pass
-
-      snips.skill.speak_temperature(snips, locality, datetime, granularity)
+  snips.skill.speak_temperature(snips, locality, datetime, granularity)
 
 
 def weather_condition_handler(hermes, intentMessage):
