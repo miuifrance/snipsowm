@@ -4,6 +4,10 @@ from hermes_python.hermes import Hermes
 import datetime as dt
 from dateutil.parser import parse
 
+MQTT_IP_ADDR = "localhost"
+MQTT_PORT = 1883
+MQTT_ADDR = "{}:{}".format(MQTT_IP_ADDR, str(MQTT_PORT))
+
 def weather_temperature_handler(hermes, intentMessage):
 
       # Determine datetime
@@ -168,9 +172,9 @@ def weather_item_handler(hermes, intentMessage):
       print "cond: {}, datetime: {}, Locality: {}, granularity: {}".format(item_name, datetime, snips.intent.forecast_locality, granularity)
       snips.skill.speak_item(snips, item_name, datetime, granularity=granularity, Locality=snips.intent.forecast_locality, Region=snips.intent.forecast_region, Country=snips.intent.forecast_country, POI=snips.intent.forecast_geographical_poi)
 
-
+      
 if __name__ == "__main__":
-     with Hermes("localhost:1883") as h:
+     with Hermes(MQTT_ADDR) as h:
         h.subscribe_intent("searchWeatherForecastTemperature", weather_temperature_handler)\
         h.subscribe_intent("searchWeatherForecastCondition", weather_condition_handler)\
         h.subscribe_intent("searchWeatherForecastItem", weather_item_handler)\
